@@ -1,0 +1,12 @@
+<repositories encoding="unicode" version="1.1">
+  <repo priority="50" quality="experimental">
+    <name>xenhat</name>
+    <description>overlay for packages modified, created or updated by XenHat</description>
+    <homepage>https://github.com/XenHat/xenhat-overlay</homepage>
+    <owner>
+      <email>voaxeyr@gmail.com</email>
+      <name>XenHat</name>
+    </owner>
+    <source type="git">https://github.com/XenHat/xenhat-overlay</source>
+  </repo>
+</repositories>
