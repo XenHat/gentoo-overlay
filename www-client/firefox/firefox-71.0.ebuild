@@ -194,26 +194,28 @@ if [[ -z $GMP_PLUGIN_LIST ]] ; then
 fi
 
 llvm_check_deps() {
-	if ! has_version --host-root "sys-devel/clang:${LLVM_SLOT}" ; then
-		ewarn "sys-devel/clang:${LLVM_SLOT} is missing! Cannot use LLVM slot ${LLVM_SLOT} ..." >&2
-		return 1
-	fi
+    if use clang ; then
+	    if ! has_version --host-root "sys-devel/clang:${LLVM_SLOT}" ; then
+	    	ewarn "sys-devel/clang:${LLVM_SLOT} is missing! Cannot use LLVM slot ${LLVM_SLOT} ..." >&2
+	    	return 1
+	    fi
 
-	if use clang ; then
-		if ! has_version --host-root "=sys-devel/lld-${LLVM_SLOT}*" ; then
-			ewarn "=sys-devel/lld-${LLVM_SLOT}* is missing! Cannot use LLVM slot ${LLVM_SLOT} ..." >&2
-			return 1
-		fi
+    	if ! has_version --host-root "=sys-devel/lld-${LLVM_SLOT}*" ; then
+    		ewarn "=sys-devel/lld-${LLVM_SLOT}* is missing! Cannot use LLVM slot ${LLVM_SLOT} ..." >&2
+    		return 1
+    	fi
 
-		if use pgo ; then
-			if ! has_version --host-root "=sys-libs/compiler-rt-sanitizers-${LLVM_SLOT}*" ; then
-				ewarn "=sys-libs/compiler-rt-sanitizers-${LLVM_SLOT}* is missing! Cannot use LLVM slot ${LLVM_SLOT} ..." >&2
-				return 1
-			fi
-		fi
-	fi
+    	if use pgo ; then
+    		if ! has_version --host-root "=sys-libs/compiler-rt-sanitizers-${LLVM_SLOT}*" ; then
+    			ewarn "=sys-libs/compiler-rt-sanitizers-${LLVM_SLOT}* is missing! Cannot use LLVM slot ${LLVM_SLOT} ..." >&2
+    			return 1
+    		fi
+    	fi
+        einfo "Will use LLVM slot ${LLVM_SLOT}!" >&2
+    else
+        einfo "Will use GCC!" >&2
+    fi
 
-	einfo "Will use LLVM slot ${LLVM_SLOT}!" >&2
 }
 
 pkg_setup() {
@@ -272,6 +274,7 @@ src_unpack() {
 src_prepare() {
 	use !wayland && rm -f "${WORKDIR}/firefox/2019_mozilla-bug1539471.patch"
 	eapply "${WORKDIR}/firefox"
+	EPATCH_OPTS="--fuzz 3"
 	eapply "${FILESDIR}/${PN}-69.0-lto-gcc-fix.patch"
 
 	# Allow user to apply any additional patches without modifing ebuild
@@ -372,7 +375,9 @@ src_configure() {
 	mozconfig_annotate 'Enable by Gentoo' --enable-release
 
 	# libclang.so is not properly detected work around issue
-	mozconfig_annotate '' --with-libclang-path="$(llvm-config --libdir)"
+	if use clang ; then
+		mozconfig_annotate '' --with-libclang-path="$(llvm-config --libdir)"
+	fi
 
 	if use pgo ; then
 		if ! has userpriv $FEATURES ; then
