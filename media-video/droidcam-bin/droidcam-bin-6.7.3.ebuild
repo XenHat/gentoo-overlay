@@ -28,10 +28,10 @@ RESTRICT="mirror"
 src_unpack() {
 	if use x86; then
 		unpack droidcam-32bit-${PV}.tbz2
-		mv ${WORKDIR}/droidcam-32bit ${WORKDIR}/droidcam-${PV}
+		mv ${WORKDIR}/droidcam-32bit ${WORKDIR}/droidcam-bin-${PV}
 	elif use amd64; then
 		unpack droidcam-64bit-${PV}.tbz2
-		mv ${WORKDIR}/droidcam-64bit ${WORKDIR}/droidcam-${PV}
+		mv ${WORKDIR}/droidcam-64bit ${WORKDIR}/droidcam-bin-${PV}
 	else
 		die "wtf"
 	fi
@@ -44,7 +44,6 @@ src_install() {
 	newicon ${DISTDIR}/droidcam-icon-${PV}.png droidcam.png
 	linux-mod_src_install
 	dodoc README
-    # Hack to fix build error
-    mkdir -p "${FILESDIR}"
-	domenu "${FILESDIR}"/droidcam.desktop
+	# Does not exist
+	#domenu "${FILESDIR}"/droidcam.desktop
 }
