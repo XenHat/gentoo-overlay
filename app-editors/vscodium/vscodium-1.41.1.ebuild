@@ -41,7 +41,6 @@ src_install() {
 	pax-mark m code
 	insinto "/opt/${PN}"
 	doins -r *
-	dosym "/opt/${PN}/bin/codium" "/usr/bin/${PN}"
 	dosym "/opt/${PN}/bin/codium" "/usr/bin/codium"
 	make_desktop_entry "${PN}" "VSCodium" "${PN}" "Development;IDE"
 	newicon "resources/app/resources/linux/code.png" ${PN}.png
